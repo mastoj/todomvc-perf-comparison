@@ -263,7 +263,7 @@ Suites.push({
 Suites.push({
     name: 'Fable',
     url: 'todomvc/fable/index.html',
-    version: '0.12.3 + virtual-dom 0.8',
+    version: '0.3.24 + virtual-dom 2.1.1',
     prepare: function (runner, contentWindow, contentDocument) {
         return runner.waitForElement('#new-todo').then(function (element) {
             element.focus();
@@ -274,7 +274,7 @@ Suites.push({
         new BenchmarkTestStep('Adding' + numberOfItemsToAdd + 'Items', function (newTodo, contentWindow, contentDocument) {
             for (var i = 0; i < numberOfItemsToAdd; i++) {
                 var inputEvent = document.createEvent('Event');
-                inputEvent.initEvent('input', true, true);
+                inputEvent.initEvent('keyup', true, true);
                 newTodo.value = 'Something to do ' + i;
                 newTodo.dispatchEvent(inputEvent);
 

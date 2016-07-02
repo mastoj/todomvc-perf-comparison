@@ -4,7 +4,7 @@ define(["exports", "fable-core", "./fable_external/Fable.Helpers.Virtualdom-1389
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
-    exports.todoApp = exports.initModel = exports.initList = exports.Storage = exports.todoView = exports.todoMain = exports.itemList = exports.listItem = exports.todoHeader = exports.todoFooter = exports.filters = exports.filter = exports.filterToTextAndUrl = exports.todoUpdate = exports.TodoAction = exports.TodoModel = exports.Item = exports.Filter = undefined;
+    exports.todoApp = exports.initModel = exports.Storage = exports.todoView = exports.todoMain = exports.itemList = exports.listItem = exports.todoHeader = exports.todoFooter = exports.filters = exports.filter = exports.filterToTextAndUrl = exports.todoUpdate = exports.TodoAction = exports.TodoModel = exports.Item = exports.Filter = undefined;
     var Filter_1;
 
     function _classCallCheck(instance, Constructor) {
@@ -192,21 +192,9 @@ define(["exports", "fable-core", "./fable_external/Fable.Helpers.Virtualdom-1389
         return $exports;
     }({});
 
-    var initList = exports.initList = _fableCore.List.ofArray(Storage.fetch());
+    var initModel = exports.initModel = (Filter_1 = new Filter("All"), new TodoModel(new _fableCore.List(), "", Filter_1));
 
-    var initModel = exports.initModel = (Filter_1 = new Filter("All"), new TodoModel(initList, "", Filter_1));
-
-    var todoApp = exports.todoApp = _FableHelpers.App.withStartNode("#todo", _FableHelpers.App.withSubscriber("modellogger", function () {
-        var clo1;
-        return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
-            console.log(x);
-        }), function (arg10) {
-            clo1(arg10);
-        };
-    }(), _FableHelpers.App.withSubscriber("storagesub", function (_arg1) {
-        var old, newModel;
-        _arg1.Case === "ModelChanged" ? (old = _arg1.Fields[1], newModel = _arg1.Fields[0], Storage.save(Array.from(newModel.Items))) : null;
-    }, _FableHelpers.App.createApp(new _FableHelpers.App.AppState(initModel, function (handler) {
+    var todoApp = exports.todoApp = _FableHelpers.App.withStartNode("#todo", _FableHelpers.App.createApp(new _FableHelpers.App.AppState(initModel, function (handler) {
         return function (model) {
             return todoView(handler, model);
         };
@@ -214,7 +202,7 @@ define(["exports", "fable-core", "./fable_external/Fable.Helpers.Virtualdom-1389
         return function (msg) {
             return todoUpdate(model, msg);
         };
-    })))));
+    })));
 
     (function (app) {
         return _FableHelpers.App.start(_FableHelpers.renderer, app);
