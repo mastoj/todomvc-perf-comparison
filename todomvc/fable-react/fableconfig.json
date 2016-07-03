@@ -1,10 +1,10 @@
 {
     "module": "commonjs",
-    "sourceMaps": true,
+    "sourceMaps": false,
     "projFile": "react-todomvc.fsx",
     "outDir": "temp",
     "scripts": {
         "prebuild": "npm install",
-        "postbuild": "webpack"
+        "postbuild": "node node_modules/webpack/bin/webpack -p"
     }
 }

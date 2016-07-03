@@ -311,7 +311,7 @@ Suites.push({
         new BenchmarkTestStep('Adding' + numberOfItemsToAdd + 'Items', function (newTodo, contentWindow, contentDocument) {
             for (var i = 0; i < numberOfItemsToAdd; i++) {
                 var inputEvent = document.createEvent('Event');
-                inputEvent.initEvent('keyup', true, true);
+                inputEvent.initEvent('input', true, true);
                 newTodo.value = 'Something to do ' + i;
                 newTodo.dispatchEvent(inputEvent);
 

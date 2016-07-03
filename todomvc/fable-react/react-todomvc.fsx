@@ -44,31 +44,31 @@ type Util =
     static member pluralize count word =
         if count = 1 then word else word + "s"
 
-    static member store
-        with get ns: Todo[] =
-            match Browser.localStorage.getItem(ns) |> unbox with
-            | Some data -> JS.JSON.parse(data) |> unbox
-            | None -> [||]
-        and set ns (data: Todo[]) =
-            Browser.localStorage.setItem(ns, JS.JSON.stringify data)
+    // static member store
+    //     with get ns: Todo[] =
+    //         match Browser.localStorage.getItem(ns) |> unbox with
+    //         | Some data -> JS.JSON.parse(data) |> unbox
+    //         | None -> [||]
+    //     and set ns (data: Todo[]) =
+    //         Browser.localStorage.setItem(ns, JS.JSON.stringify data)
 
 type TodoModel(key) =
     member val key = key
-    member val todos: Todo[] = Util.store(key) with get, set
+    member val todos: Todo[] = [||] (* Util.store(key) *) with get, set
     member val onChanges: (unit->unit)[] = [||] with get, set
 
     member this.subscribe (onChange) =
         this.onChanges <- [|onChange|]
 
     member this.inform () =
-        Util.store(this.key) <- this.todos
+        // Util.store(this.key) <- this.todos
         this.onChanges |> Seq.iter (fun cb -> cb())
 
     member this.addTodo (title) =
-        this.todos <- [|
-            yield! this.todos
-            yield { id=Util.uuid(); title=title; completed=false }
-        |]
+        this.todos <- 
+            [| { id=Util.uuid(); title=title; completed=false } |]
+            |> Array.append this.todos
+        // [| yield! this.todos; yield { id=Util.uuid(); title=title; completed=false } |]
         this.inform()
 
     member this.toggleAll (checked') =
@@ -149,10 +149,10 @@ type TodoItem(props) =
         if this.props.editing then
             this.setState { editText = string e.target?value }
 
-    member this.shouldComponentUpdate (nextProps: TodoItemProps) (nextState: TodoItemState) =
-        nextProps.todo <> this.props.todo
-        || nextProps.editing <> this.props.editing
-        || nextState.editText <> this.state.editText
+    // member this.shouldComponentUpdate (nextProps: TodoItemProps) (nextState: TodoItemState) =
+    //     nextProps.todo <> this.props.todo
+    //     || nextProps.editing <> this.props.editing
+    //     || nextState.editText <> this.state.editText
 
     member this.componentDidUpdate (prevProps: TodoItemProps) =
         if not prevProps.editing && this.props.editing then
@@ -349,6 +349,7 @@ type TodoApp(props) =
                 R.h1 [] [ unbox "todos" ]
                 R.input [
                     ClassName "new-todo"
+                    Id "new-todo"
                     Placeholder "What needs to be done?"
                     Value (U2.Case1 this.state.newTodo)
                     OnKeyDown this.handleNewTodoKeyDown
