@@ -1,6 +1,6 @@
 {
     "module": "commonjs",
-    "sourceMaps": false,
+    "sourceMaps": true,
     "projFile": "react-todomvc.fsx",
     "outDir": "temp",
     "scripts": {

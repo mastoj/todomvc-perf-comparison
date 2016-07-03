@@ -121,9 +121,9 @@ Suites.push({
 Suites.push({
     name: 'React',
     url: 'todomvc/react/index.html',
-    version: '0.10.0',
+    version: '15.1.0',
     prepare: function (runner, contentWindow, contentDocument) {
-        contentWindow.Utils.store = function () {}
+        // contentWindow.Utils.store = function () {}
         return runner.waitForElement('#new-todo').then(function (element) {
             element.focus();
             return element;
@@ -310,14 +310,10 @@ Suites.push({
     tests: [
         new BenchmarkTestStep('Adding' + numberOfItemsToAdd + 'Items', function (newTodo, contentWindow, contentDocument) {
             for (var i = 0; i < numberOfItemsToAdd; i++) {
-                var inputEvent = document.createEvent('Event');
-                inputEvent.initEvent('input', true, true);
-                newTodo.value = 'Something to do ' + i;
-                newTodo.dispatchEvent(inputEvent);
-
                 var keydownEvent = document.createEvent('Event');
                 keydownEvent.initEvent('keydown', true, true);
-                keydownEvent.keyCode = 13; // VK_ENTER
+                keydownEvent.which = 13; // VK_ENTER
+                newTodo.value = 'Something to do ' + i;
                 newTodo.dispatchEvent(keydownEvent);
             }
         }),

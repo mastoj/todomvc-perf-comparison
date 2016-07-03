@@ -44,13 +44,13 @@ type Util =
     static member pluralize count word =
         if count = 1 then word else word + "s"
 
-    // static member store
-    //     with get ns: Todo[] =
-    //         match Browser.localStorage.getItem(ns) |> unbox with
-    //         | Some data -> JS.JSON.parse(data) |> unbox
-    //         | None -> [||]
-    //     and set ns (data: Todo[]) =
-    //         Browser.localStorage.setItem(ns, JS.JSON.stringify data)
+    static member store
+        with get ns: Todo[] =
+            match Browser.localStorage.getItem(ns) |> unbox with
+            | Some data -> JS.JSON.parse(data) |> unbox
+            | None -> [||]
+        and set ns (data: Todo[]) =
+            Browser.localStorage.setItem(ns, JS.JSON.stringify data)
 
 type TodoModel(key) =
     member val key = key
@@ -149,10 +149,10 @@ type TodoItem(props) =
         if this.props.editing then
             this.setState { editText = string e.target?value }
 
-    // member this.shouldComponentUpdate (nextProps: TodoItemProps) (nextState: TodoItemState) =
-    //     nextProps.todo <> this.props.todo
-    //     || nextProps.editing <> this.props.editing
-    //     || nextState.editText <> this.state.editText
+    member this.shouldComponentUpdate (nextProps: TodoItemProps) (nextState: TodoItemState) =
+        obj.ReferenceEquals(nextProps.todo, this.props)
+        || nextProps.editing <> this.props.editing
+        || nextState.editText <> this.state.editText
 
     member this.componentDidUpdate (prevProps: TodoItemProps) =
         if not prevProps.editing && this.props.editing then
@@ -264,12 +264,16 @@ type TodoApp(props) =
         this.setState({ this.state with newTodo = unbox ev.target?value })
 
     member this.handleNewTodoKeyDown (ev: React.KeyboardEvent) =
-        if ev.keyCode = ENTER_KEY then
-            ev.preventDefault()
-            let v = this.state.newTodo.Trim()
-            if v.Length > 0 then
-                this.props.model.addTodo(v)
-                this.setState({ this.state with newTodo = "" })
+        // if ev.keyCode = ENTER_KEY then
+        //     ev.preventDefault()
+        //     let v = this.state.newTodo.Trim()
+        //     if v.Length > 0 then
+        //         this.props.model.addTodo(v)
+        //         this.setState({ this.state with newTodo = "" })
+        ev.preventDefault()
+        let v = (unbox<string> ev?target?value).Trim()
+        this.props.model.addTodo(v)
+        this.setState({ this.state with newTodo = "" })
 
     member this.toggleAll (ev: React.SyntheticEvent) =
         this.props.model.toggleAll(unbox ev.target?``checked``)
