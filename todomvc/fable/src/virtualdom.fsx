@@ -303,7 +303,8 @@ let listItem item =
                  property "id" ("item-"+item.Id.ToString())
                  onBlur (fun e -> SaveItem (item, (e?target?value :?> string))) ] ]
 
-let itemList items activeFilter =
+let memoizedListItem = memoize listItem
+let itemList (items,activeFilter) =
     let filterItems i =
         match activeFilter with
         | All -> true
@@ -311,8 +312,9 @@ let itemList items activeFilter =
         | Active -> not i.Done
 
     ul [attribute "class" "todo-list" ]
-       (items |> List.filter filterItems |> List.map listItem)
+       (items |> List.filter filterItems |> List.map memoizedListItem)
 
+let memoizedItemList = memoize itemList
 let todoMain model =
     let items = model.Items
     let allChecked = items |> List.exists (fun i -> not i.Done)
@@ -328,15 +330,17 @@ let todoMain model =
                                     else UnCheckAll) ]
                 label [ attribute "for" "toggle-all" ]
                       [ text "Mark all as complete" ]
-                (itemList items model.Filter) ]
+                (memoizedItemList (items, model.Filter)) ]
 
+let memoizedFooter = memoize todoFooter
+let memoizedMain = memoize todoMain
 let todoView model =
     section
         [attribute "class" "todoapp"]
         ((todoHeader model.Input)::(if model.Items |> List.isEmpty
                 then []
-                else [  (todoMain model)
-                        (todoFooter model) ] ))
+                else [  (memoizedMain model)
+                        (memoizedFooter model) ] ))
 
 (**
 This view is more complex than the first example, but it also show how easy it is

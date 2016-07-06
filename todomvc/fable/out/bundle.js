@@ -49,7 +49,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.todoApp = exports.initModel = exports.initList = exports.Storage = exports.todoView = exports.todoMain = exports.itemList = exports.listItem = exports.todoHeader = exports.todoFooter = exports.filters = exports.filter = exports.filterToTextAndUrl = exports.todoUpdate = exports.TodoAction = exports.TodoModel = exports.Item = exports.Filter = undefined;
+	exports.todoApp = exports.initModel = exports.initList = exports.Storage = exports.todoView = exports.memoizedMain = exports.memoizedFooter = exports.todoMain = exports.memoizedItemList = exports.itemList = exports.memoizedListItem = exports.listItem = exports.todoHeader = exports.todoFooter = exports.filters = exports.filter = exports.filterToTextAndUrl = exports.todoUpdate = exports.TodoAction = exports.TodoModel = exports.Item = exports.Filter = undefined;
 	var Filter_1;
 	
 	var _fableCore = __webpack_require__(1);
@@ -285,6 +285,10 @@
 	    }]))])])]));
 	};
 	
+	var memoizedListItem = exports.memoizedListItem = (0, _FableHelpers.memoize)(function (item) {
+	    return listItem(item);
+	});
+	
 	var itemList = exports.itemList = function (items, activeFilter) {
 	    var filterItems;
 	    return filterItems = function (i) {
@@ -297,13 +301,16 @@
 	            };
 	        }();
 	    }()(function (list) {
-	        return _fableCore.List.map(function (item) {
-	            return listItem(item);
-	        }, list);
+	        return _fableCore.List.map(memoizedListItem, list);
 	    }(function (list) {
 	        return _fableCore.List.filter(filterItems, list);
 	    }(items)));
 	};
+	
+	var memoizedItemList = exports.memoizedItemList = (0, _FableHelpers.memoize)(function (tupledArg) {
+	    var items, activeFilter;
+	    return items = tupledArg[0], activeFilter = tupledArg[1], itemList(items, activeFilter);
+	});
 	
 	var todoMain = exports.todoMain = function (model) {
 	    var items, allChecked;
@@ -325,8 +332,15 @@
 	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["for", "toggle-all"])])], children);
 	            };
 	        }();
-	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "Mark all as complete")])), itemList(items, model.Filter)]));
+	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "Mark all as complete")])), memoizedItemList([items, model.Filter])]));
 	};
+	
+	var memoizedFooter = exports.memoizedFooter = (0, _FableHelpers.memoize)(function (model) {
+	    return todoFooter(model);
+	});
+	var memoizedMain = exports.memoizedMain = (0, _FableHelpers.memoize)(function (model) {
+	    return todoMain(model);
+	});
 	
 	var todoView = exports.todoView = function (model) {
 	    return function () {
@@ -336,7 +350,7 @@
 	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "todoapp"])])], children);
 	            };
 	        }();
-	    }()(_fableCore.List.ofArray([todoHeader(model.Input)], model.Items.tail == null ? new _fableCore.List() : _fableCore.List.ofArray([todoMain(model), todoFooter(model)])));
+	    }()(_fableCore.List.ofArray([todoHeader(model.Input)], model.Items.tail == null ? new _fableCore.List() : _fableCore.List.ofArray([memoizedMain(model), memoizedFooter(model)])));
 	};
 	
 	var Storage = exports.Storage = function ($exports) {
@@ -2864,7 +2878,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.renderer = exports.render = exports.createTree = exports.App = exports.Html = undefined;
+	exports.memoize = exports.renderer = exports.render = exports.createTree = exports.App = exports.Html = undefined;
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -3138,6 +3152,16 @@
 	    }, function (e) {
 	        return (0, _virtualDom.create)(e);
 	    });
+	};
+	
+	var memoize = exports.memoize = function (f) {
+	    return function () {
+	        var cache;
+	        return cache = new Map(), function (x) {
+	            var res;
+	            return cache.has(x) ? cache.get(x) : (res = f(x), cache.set(x, res), res);
+	        };
+	    }();
 	};
 
 
