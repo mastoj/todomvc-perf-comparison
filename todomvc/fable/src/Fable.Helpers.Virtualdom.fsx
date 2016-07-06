@@ -7,10 +7,10 @@ open Fable.Core
 [<Import("h","virtual-dom")>]
 let h(arg1: string, arg2: obj, arg3: obj[]): obj = failwith "JS only"
 
-[<Import("diff","virtual-dom")>] 
+[<Import("diff","virtual-dom")>]
 let diff (tree1:obj) (tree2:obj): obj = failwith "JS only"
 
-[<Import("patch","virtual-dom")>] 
+[<Import("patch","virtual-dom")>]
 let patch (node:obj) (patches:obj): Fable.Import.Browser.Node = failwith "JS only"
 
 [<Import("create","virtual-dom")>]
@@ -31,34 +31,34 @@ module Html =
                 keyCode: int
             }
 
-        type MouseEventHandler = string*(MouseEvent -> unit)
-        type KeyboardEventHandler = string*(KeyboardEvent -> unit)
-        type EventHandler = string*(obj -> unit)
+        type MouseEventHandler<'TMessage> = string*(MouseEvent -> 'TMessage)
+        type KeyboardEventHandler<'TMessage> = string*(KeyboardEvent -> 'TMessage)
+        type EventHandler<'TMessage> = string*(obj -> 'TMessage)
 
-        type EventHandlerBinding =
-            | MouseEventHandler of MouseEventHandler
-            | KeyboardEventHandler of KeyboardEventHandler
-            | EventHandler of EventHandler
+        type EventHandlerBinding<'TMessage> =
+            | MouseEventHandler of MouseEventHandler<'TMessage>
+            | KeyboardEventHandler of KeyboardEventHandler<'TMessage>
+            | EventHandler of EventHandler<'TMessage>
 
         type Style = (string*string) list
 
         type KeyValue = string*string
 
-        type Attribute =
-        | EventHandlerBinding of EventHandlerBinding
+        type Attribute<'TMessage> =
+        | EventHandlerBinding of EventHandlerBinding<'TMessage>
         | Style of Style
         | Property of KeyValue
         | Attribute of KeyValue
 
-        type Element = string * Attribute list
+        type Element<'TMessage> = string * Attribute<'TMessage> list
         /// A Node in Html have the following forms
-        type VoidElement = string * Attribute list
-        type Node =
+        type VoidElement<'TMessage> = string * Attribute<'TMessage> list
+        type Node<'TMessage> =
         /// A regular html element that can contain a list of other nodes
-        | Element of Element * Node list
+        | Element of Element<'TMessage> * Node<'TMessage> list
         /// A void element is one that can't have content, like link, br, hr, meta
         /// See: https://dev.w3.org/html5/html-author/#void
-        | VoidElement of VoidElement
+        | VoidElement of VoidElement<'TMessage>
         /// A text value for a node
         | Text of string
         /// Whitespace for formatting
@@ -307,7 +307,7 @@ module App =
 
     type AppState<'TModel, 'TMessage> = {
             Model: 'TModel
-            View: ('TMessage -> unit) -> 'TModel -> Html.Types.Node
+            View: 'TModel -> Html.Types.Node<'TMessage>
             Update: 'TModel -> 'TMessage -> ('TModel * ((unit -> unit) list)) }
 
 
@@ -345,9 +345,9 @@ module App =
         | RemoveSubscriber of string
         | Message of 'TMessage
 
-    type Renderer =
+    type Renderer<'TMessage> =
         {
-            Render: Html.Types.Node -> obj
+            Render: ('TMessage -> unit) -> Html.Types.Node<'TMessage> -> obj
             Diff: obj -> obj -> obj
             Patch: Fable.Import.Browser.Node -> obj -> Fable.Import.Browser.Node
             CreateElement: obj -> Fable.Import.Browser.Node
@@ -355,8 +355,8 @@ module App =
 
     let start renderer app =
         let renderTree view handler model =
-            view handler model
-            |> renderer.Render
+            view model
+            |> renderer.Render handler
 
         let startElem =
             match app.NodeSelector with
@@ -395,22 +395,29 @@ module App =
                 }
             loop app)
 
-let createTree tag attributes children =
-    let toAttrs attrs =
+let createTree<'T> (handler:'T -> unit) tag (attributes:Attribute<'T> list) children =
+    let toAttrs (attrs:Attribute<'T> list) =
         attrs
         |> List.map (function
             | Style style -> "style" ==> createObj(unbox style)
             | Property keyValue -> unbox keyValue
             | Attribute keyValue -> unbox keyValue
-            | EventHandlerBinding binding -> unbox binding?Fields?(0) // Performance hack
+            | EventHandlerBinding binding ->
+                match binding with
+                | MouseEventHandler(ev, f) -> ev, ((f >> handler) :> obj) //  unbox binding?Fields?(0) |> handler// Performance hack
+                | KeyboardEventHandler(ev, f) -> ev, ((f >> handler) :> obj) //  unbox binding?Fields?(0) |> handler// Performance hack
+                | EventHandler(ev, f) -> ev, ((f >> handler) :> obj) //  unbox binding?Fields?(0) |> handler// Performance hack
+//        type MouseEventHandler<'TMessage> = string*(MouseEvent -> 'TMessage)
+//        type KeyboardEventHandler<'TMessage> = string*(KeyboardEvent -> 'TMessage)
+//        type EventHandler<'TMessage> = string*(obj -> 'TMessage)
         )
         |> createObj
     h(tag, toAttrs attributes, List.toArray children)
 
-let rec render node =
+let rec render handler node =
     match node with
-    | Element((tag,attrs), nodes) -> createTree tag attrs (nodes |> List.map render)
-    | VoidElement (tag, attrs) -> createTree tag attrs []
+    | Element((tag,attrs), nodes) -> createTree handler tag attrs (nodes |> List.map (render handler))
+    | VoidElement (tag, attrs) -> createTree handler tag attrs []
     | Text str -> box(string str)
     | WhiteSpace str -> box(string str)
 

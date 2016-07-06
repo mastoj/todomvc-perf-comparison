@@ -49,7 +49,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.todoApp = exports.initModel = exports.initList = exports.Storage = exports.todoView = exports.todoMain = exports.itemList = exports.listItem = exports.todoHeader = exports.todoFooter = exports.filters = exports.filter = exports.filterToTextAndUrl = exports.todoUpdate = exports.TodoAction = exports.TodoModel = exports.Item = exports.Filter = exports.counterView = exports.counterUpdate = exports.CounterAction = exports.initCounter = undefined;
+	exports.todoApp = exports.initModel = exports.initList = exports.Storage = exports.todoView = exports.todoMain = exports.itemList = exports.listItem = exports.todoHeader = exports.todoFooter = exports.filters = exports.filter = exports.filterToTextAndUrl = exports.todoUpdate = exports.TodoAction = exports.TodoModel = exports.Item = exports.Filter = undefined;
 	var Filter_1;
 	
 	var _fableCore = __webpack_require__(1);
@@ -57,69 +57,6 @@
 	var _FableHelpers = __webpack_require__(2);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var initCounter = exports.initCounter = 0;
-	
-	var CounterAction = exports.CounterAction = function CounterAction() {
-	    _classCallCheck(this, CounterAction);
-	
-	    this.Case = arguments[0];
-	    this.Fields = [];
-	
-	    for (var i = 1; i < arguments.length; i++) {
-	        this.Fields[i - 1] = arguments[i];
-	    }
-	};
-	
-	_fableCore.Util.setInterfaces(CounterAction.prototype, [], "Virtualdom.CounterAction");
-	
-	var counterUpdate = exports.counterUpdate = function (model, action) {
-	    var x;
-	    return function (m) {
-	        return [m, []];
-	    }(action.Case === "Increment" ? (x = action.Fields[0], model + x) : (x = action.Fields[0], model - x));
-	};
-	
-	var counterView = exports.counterView = function (handler, model) {
-	    var bgColor, x;
-	    return bgColor = (x = model, x > 100) ? (x = model, "red") : (x = model, x < 0) ? (x = model, "blue") : "green", function () {
-	        return function () {
-	            var tagName;
-	            return tagName = "div", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, []], children);
-	            };
-	        }();
-	    }()([function () {
-	        return function () {
-	            var tagName;
-	            return tagName = "div", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Style", [["border", "1px solid blue"]]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (x) {
-	                    handler(new CounterAction("Increment", 1));
-	                }])), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["ondblclick", function (x) {
-	                    handler(new CounterAction("Increment", 100));
-	                }]))]], children);
-	            };
-	        }();
-	    }()([new _FableHelpers.Html.Types.Node("Text", "Increment")]), function () {
-	        return function () {
-	            var tagName;
-	            return tagName = "div", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Style", [["background-color", bgColor], ["color", "white"]])]], children);
-	            };
-	        }();
-	    }()([new _FableHelpers.Html.Types.Node("Text", model.toString())]), function () {
-	        return function () {
-	            var tagName;
-	            return tagName = "div", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Style", [["border", "1px solid green"], ["height", (70 + model).toString() + "px"]]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (x) {
-	                    handler(new CounterAction("Decrement", 1));
-	                }])), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["ondblclick", function (x) {
-	                    handler(new CounterAction("Decrement", 50));
-	                }]))]], children);
-	            };
-	        }();
-	    }()([new _FableHelpers.Html.Types.Node("Text", "Decrement")])]);
-	};
 	
 	var Filter = exports.Filter = function Filter() {
 	    _classCallCheck(this, Filter);
@@ -171,184 +108,184 @@
 	var todoUpdate = exports.todoUpdate = function (model, msg) {
 	    var checkAllWith, updateItem, model_, jsCalls, v, i, items_, f, item, maxId, item_, Id;
 	    return checkAllWith = function (v) {
-	        return new TodoModel(Array.from(_fableCore.Seq.map(function (i) {
+	        return new TodoModel(_fableCore.List.map(function (i) {
 	            return new Item(i.Name, v, i.Id, i.IsEditing);
-	        }, model.Items)), model.Input, model.Filter);
+	        }, model.Items), model.Input, model.Filter);
 	    }, updateItem = function (i) {
 	        return function (model_1) {
 	            var items_;
-	            return items_ = Array.from(_fableCore.Seq.map(function (i_) {
+	            return items_ = _fableCore.List.map(function (i_) {
 	                return i_.Id !== i.Id ? i_ : i;
-	            }, model_1.Items)), new TodoModel(items_, model_1.Input, model_1.Filter);
+	            }, model_1.Items), new TodoModel(items_, model_1.Input, model_1.Filter);
 	        };
-	    }, model_ = msg.Case === "ChangeInput" ? (v = msg.Fields[0], new TodoModel(model.Items, v, model.Filter)) : msg.Case === "MarkAsDone" ? (i = msg.Fields[0], items_ = Array.from(_fableCore.Seq.map(function (i_) {
+	    }, model_ = msg.Case === "ChangeInput" ? (v = msg.Fields[0], new TodoModel(model.Items, v, model.Filter)) : msg.Case === "MarkAsDone" ? (i = msg.Fields[0], items_ = _fableCore.List.map(function (i_) {
 	        var Done;
-	        return !(i === i_) ? i_ : (Done = true, new Item(i.Name, Done, i.Id, i.IsEditing));
-	    }, model.Items)), new TodoModel(items_, model.Input, model.Filter)) : msg.Case === "CheckAll" ? checkAllWith(true) : msg.Case === "UnCheckAll" ? checkAllWith(false) : msg.Case === "Destroy" ? (i = msg.Fields[0], new TodoModel(model.Items.filter(function (i_) {
+	        return _fableCore.Util.compareTo(i_, i) !== 0 ? i_ : (Done = true, new Item(i.Name, Done, i.Id, i.IsEditing));
+	    }, model.Items), new TodoModel(items_, model.Input, model.Filter)) : msg.Case === "CheckAll" ? checkAllWith(true) : msg.Case === "UnCheckAll" ? checkAllWith(false) : msg.Case === "Destroy" ? (i = msg.Fields[0], new TodoModel(_fableCore.List.filter(function (i_) {
 	        return i_.Id !== i.Id;
-	    }), model.Input, model.Filter)) : msg.Case === "ToggleItem" ? function () {
+	    }, model.Items), model.Input, model.Filter)) : msg.Case === "ToggleItem" ? function () {
 	        var i, Done;
 	        return i = msg.Fields[0], updateItem((Done = !i.Done, new Item(i.Name, Done, i.Id, i.IsEditing)))(model);
-	    }() : msg.Case === "SetActiveFilter" ? (f = msg.Fields[0], new TodoModel(model.Items, model.Input, f)) : msg.Case === "ClearCompleted" ? new TodoModel(model.Items.filter(function (i) {
+	    }() : msg.Case === "SetActiveFilter" ? (f = msg.Fields[0], new TodoModel(model.Items, model.Input, f)) : msg.Case === "ClearCompleted" ? new TodoModel(_fableCore.List.filter(function (i) {
 	        return !i.Done;
-	    }), model.Input, model.Filter) : msg.Case === "EditItem" ? function () {
+	    }, model.Items), model.Input, model.Filter) : msg.Case === "EditItem" ? function () {
 	        var i, IsEditing;
 	        return i = msg.Fields[0], updateItem((IsEditing = true, new Item(i.Name, i.Done, i.Id, IsEditing)))(model);
 	    }() : msg.Case === "SaveItem" ? function () {
 	        var str, i, IsEditing;
 	        return str = msg.Fields[1], i = msg.Fields[0], updateItem((IsEditing = false, new Item(str, i.Done, i.Id, IsEditing)))(model);
-	    }() : (item = msg.Fields[0], maxId = model.Items.length === 0 ? 1 : _fableCore.Seq.max(_fableCore.Seq.map(function (x) {
+	    }() : msg.Case === "Noop" ? model : (item = msg.Fields[0], maxId = model.Items.tail == null ? 1 : _fableCore.Seq.max(_fableCore.List.map(function (x) {
 	        return x.Id;
-	    }, model.Items)), item_ = (Id = maxId + 1, new Item(item.Name, item.Done, Id, item.IsEditing)), new TodoModel(Array.from(_fableCore.Seq.append(model.Items, [item_])), "", model.Filter)), jsCalls = msg.Case === "EditItem" ? (i = msg.Fields[0], [function (unitVar0) {
+	    }, model.Items)), item_ = (Id = maxId + 1, new Item(item.Name, item.Done, Id, item.IsEditing)), new TodoModel(_fableCore.List.ofArray([item_], model.Items), "", model.Filter)), jsCalls = msg.Case === "EditItem" ? (i = msg.Fields[0], _fableCore.List.ofArray([function (unitVar0) {
 	        document.getElementById("item-" + i.Id.toString()).focus();
-	    }]) : [], [model_, jsCalls];
+	    }])) : new _fableCore.List(), [model_, jsCalls];
 	};
 	
 	var filterToTextAndUrl = exports.filterToTextAndUrl = function (_arg1) {
 	    return _arg1.Case === "Completed" ? ["Completed", "completed"] : _arg1.Case === "Active" ? ["Active", "active"] : ["All", ""];
 	};
 	
-	var filter = exports.filter = function (handler, activeFilter, f) {
+	var filter = exports.filter = function (activeFilter, f) {
 	    var linkClass, patternInput, url, fText;
 	    return linkClass = _fableCore.Util.compareTo(f, activeFilter) === 0 ? "selected" : "", patternInput = filterToTextAndUrl(f), url = patternInput[1], fText = patternInput[0], function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "li", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (_arg1) {
-	                    handler(new TodoAction("SetActiveFilter", f));
-	                }]))]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (_arg1) {
+	                    return new TodoAction("SetActiveFilter", f);
+	                }]))])], children);
 	            };
 	        }();
-	    }()([function () {
+	    }()(_fableCore.List.ofArray([function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "a", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["href", "#/" + url]), new _FableHelpers.Html.Types.Attribute("Attribute", ["class", linkClass])]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["href", "#/" + url]), new _FableHelpers.Html.Types.Attribute("Attribute", ["class", linkClass])])], children);
 	            };
 	        }();
-	    }()([new _FableHelpers.Html.Types.Node("Text", fText)])]);
+	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", fText)]))]));
 	};
 	
-	var filters = exports.filters = function (model, handler) {
+	var filters = exports.filters = function (model) {
 	    return function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "ul", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "filters"])]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "filters"])])], children);
 	            };
 	        }();
-	    }()(Array.from(_fableCore.Seq.map(function () {
+	    }()(_fableCore.List.map(function () {
 	        var activeFilter;
 	        return activeFilter = model.Filter, function (f) {
-	            return filter(handler, activeFilter, f);
+	            return filter(activeFilter, f);
 	        };
-	    }(), [new Filter("All"), new Filter("Active"), new Filter("Completed")])));
+	    }(), _fableCore.List.ofArray([new Filter("All"), new Filter("Active"), new Filter("Completed")])));
 	};
 	
-	var todoFooter = exports.todoFooter = function (model, handler) {
+	var todoFooter = exports.todoFooter = function (model) {
 	    var clearVisibility, activeCount;
 	    return clearVisibility = _fableCore.Seq.exists(function (i) {
 	        return i.Done;
-	    }, model.Items) ? "" : "none", activeCount = _fableCore.Seq.length(_fableCore.Seq.filter(function (i) {
+	    }, model.Items) ? "" : "none", activeCount = _fableCore.List.filter(function (i) {
 	        return !i.Done;
-	    }, model.Items)).toString(), function () {
+	    }, model.Items).length.toString(), function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "footer", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "footer"]), new _FableHelpers.Html.Types.Attribute("Style", [["display", "block"]])]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "footer"]), new _FableHelpers.Html.Types.Attribute("Style", _fableCore.List.ofArray([["display", "block"]]))])], children);
 	            };
 	        }();
-	    }()([function () {
+	    }()(_fableCore.List.ofArray([function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "span", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "todo-count"])]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "todo-count"])])], children);
 	            };
 	        }();
-	    }()([function () {
+	    }()(_fableCore.List.ofArray([function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "strong", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, []], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, new _fableCore.List()], children);
 	            };
 	        }();
-	    }()([new _FableHelpers.Html.Types.Node("Text", activeCount)]), new _FableHelpers.Html.Types.Node("Text", " items left")]), filters(model, handler), function () {
+	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", activeCount)])), new _FableHelpers.Html.Types.Node("Text", " items left")])), filters(model), function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "button", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "clear-completed"]), new _FableHelpers.Html.Types.Attribute("Style", [["display", clearVisibility]]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (_arg1) {
-	                    handler(new TodoAction("ClearCompleted"));
-	                }]))]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "clear-completed"]), new _FableHelpers.Html.Types.Attribute("Style", _fableCore.List.ofArray([["display", clearVisibility]])), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (_arg1) {
+	                    return new TodoAction("ClearCompleted");
+	                }]))])], children);
 	            };
 	        }();
-	    }()([new _FableHelpers.Html.Types.Node("Text", "Clear completed")])]);
+	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "Clear completed")]))]));
 	};
 	
-	var todoHeader = exports.todoHeader = function (model, handler) {
+	var todoHeader = exports.todoHeader = function (model) {
 	    return function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "header", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "header"])]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "header"])])], children);
 	            };
 	        }();
-	    }()([function () {
+	    }()(_fableCore.List.ofArray([function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "h1", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, []], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, new _fableCore.List()], children);
 	            };
 	        }();
-	    }()([new _FableHelpers.Html.Types.Node("Text", "todos")]), new _FableHelpers.Html.Types.Node("VoidElement", ["input", [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Attribute", ["id", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Property", ["placeholder", "What needs to be done?"]), new _FableHelpers.Html.Types.Attribute("Property", ["value", model]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("KeyboardEventHandler", ["onkeydown", function (x) {
+	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "todos")])), new _FableHelpers.Html.Types.Node("VoidElement", ["input", _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Attribute", ["id", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Property", ["placeholder", "What needs to be done?"]), new _FableHelpers.Html.Types.Attribute("Property", ["value", model]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("KeyboardEventHandler", ["onkeydown", function (x) {
 	        var Id;
-	        x.keyCode === 13 ? handler(new TodoAction("AddItem", (Id = 0, new Item(model, false, Id, false)))) : null;
+	        return x.keyCode === 13 ? new TodoAction("AddItem", (Id = 0, new Item(model, false, Id, false))) : new TodoAction("Noop");
 	    }])), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("KeyboardEventHandler", ["onkeyup", function (x) {
-	        handler(new TodoAction("ChangeInput", x.target.value));
-	    }]))]])]);
+	        return new TodoAction("ChangeInput", x.target.value);
+	    }]))])])]));
 	};
 	
-	var listItem = exports.listItem = function (handler, item) {
+	var listItem = exports.listItem = function (item) {
 	    var itemChecked, editClass;
 	    return itemChecked = item.Done ? "true" : "", editClass = item.IsEditing ? "editing" : "", function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "li", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", (item.Done ? "completed " : " ") + editClass])]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", (item.Done ? "completed " : " ") + editClass])])], children);
 	            };
 	        }();
-	    }()([function () {
+	    }()(_fableCore.List.ofArray([function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "div", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "view"]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["ondblclick", function (x) {
-	                    handler(new TodoAction("EditItem", item));
-	                }]))]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "view"]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["ondblclick", function (x) {
+	                    return new TodoAction("EditItem", item);
+	                }]))])], children);
 	            };
 	        }();
-	    }()([new _FableHelpers.Html.Types.Node("VoidElement", ["input", [new _FableHelpers.Html.Types.Attribute("Property", ["className", "toggle"]), new _FableHelpers.Html.Types.Attribute("Property", ["type", "checkbox"]), new _FableHelpers.Html.Types.Attribute("Property", ["checked", itemChecked]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (e) {
-	        handler(new TodoAction("ToggleItem", item));
-	    }]))]]), function () {
+	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("VoidElement", ["input", _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Property", ["className", "toggle"]), new _FableHelpers.Html.Types.Attribute("Property", ["type", "checkbox"]), new _FableHelpers.Html.Types.Attribute("Property", ["checked", itemChecked]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (e) {
+	        return new TodoAction("ToggleItem", item);
+	    }]))])]), function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "label", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, []], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, new _fableCore.List()], children);
 	            };
 	        }();
-	    }()([new _FableHelpers.Html.Types.Node("Text", item.Name)]), function () {
+	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", item.Name)])), function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "button", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "destroy"]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (e) {
-	                    handler(new TodoAction("Destroy", item));
-	                }]))]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "destroy"]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (e) {
+	                    return new TodoAction("Destroy", item);
+	                }]))])], children);
 	            };
 	        }();
-	    }()([])]), new _FableHelpers.Html.Types.Node("VoidElement", ["input", [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "edit"]), new _FableHelpers.Html.Types.Attribute("Attribute", ["value", item.Name]), new _FableHelpers.Html.Types.Attribute("Property", ["id", "item-" + item.Id.toString()]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("EventHandler", ["onblur", function (e) {
-	        handler(new TodoAction("SaveItem", item, e.target.value));
-	    }]))]])]);
+	    }()(new _fableCore.List())])), new _FableHelpers.Html.Types.Node("VoidElement", ["input", _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "edit"]), new _FableHelpers.Html.Types.Attribute("Attribute", ["value", item.Name]), new _FableHelpers.Html.Types.Attribute("Property", ["id", "item-" + item.Id.toString()]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("EventHandler", ["onblur", function (e) {
+	        return new TodoAction("SaveItem", item, e.target.value);
+	    }]))])])]));
 	};
 	
-	var itemList = exports.itemList = function (handler, items, activeFilter) {
+	var itemList = exports.itemList = function (items, activeFilter) {
 	    var filterItems;
 	    return filterItems = function (i) {
 	        return activeFilter.Case === "Completed" ? i.Done : activeFilter.Case === "Active" ? !i.Done : true;
@@ -356,17 +293,19 @@
 	        return function () {
 	            var tagName;
 	            return tagName = "ul", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "todo-list"])]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "todo-list"])])], children);
 	            };
 	        }();
-	    }()(Array.from(_fableCore.Seq.map(function (item) {
-	        return listItem(handler, item);
-	    }, function (source) {
-	        return _fableCore.Seq.filter(filterItems, source);
-	    }(items))));
+	    }()(function (list) {
+	        return _fableCore.List.map(function (item) {
+	            return listItem(item);
+	        }, list);
+	    }(function (list) {
+	        return _fableCore.List.filter(filterItems, list);
+	    }(items)));
 	};
 	
-	var todoMain = exports.todoMain = function (model, handler) {
+	var todoMain = exports.todoMain = function (model) {
 	    var items, allChecked;
 	    return items = model.Items, allChecked = _fableCore.Seq.exists(function (i) {
 	        return !i.Done;
@@ -374,30 +313,30 @@
 	        return function () {
 	            var tagName;
 	            return tagName = "section", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "main"]), new _FableHelpers.Html.Types.Attribute("Style", [["style", "block"]])]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "main"]), new _FableHelpers.Html.Types.Attribute("Style", _fableCore.List.ofArray([["style", "block"]]))])], children);
 	            };
 	        }();
-	    }()([new _FableHelpers.Html.Types.Node("VoidElement", ["input", [new _FableHelpers.Html.Types.Attribute("Property", ["id", "toggle-all"]), new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "toggle-all"]), new _FableHelpers.Html.Types.Attribute("Property", ["type", "checkbox"]), new _FableHelpers.Html.Types.Attribute("Property", ["checked", !allChecked ? "true" : ""]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (e) {
-	        allChecked ? handler(new TodoAction("CheckAll")) : handler(new TodoAction("UnCheckAll"));
-	    }]))]]), function () {
+	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("VoidElement", ["input", _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Property", ["id", "toggle-all"]), new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "toggle-all"]), new _FableHelpers.Html.Types.Attribute("Property", ["type", "checkbox"]), new _FableHelpers.Html.Types.Attribute("Property", ["checked", !allChecked ? "true" : ""]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("MouseEventHandler", ["onclick", function (e) {
+	        return allChecked ? new TodoAction("CheckAll") : new TodoAction("UnCheckAll");
+	    }]))])]), function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "label", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["for", "toggle-all"])]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["for", "toggle-all"])])], children);
 	            };
 	        }();
-	    }()([new _FableHelpers.Html.Types.Node("Text", "Mark all as complete")]), itemList(handler, items, model.Filter)]);
+	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "Mark all as complete")])), itemList(items, model.Filter)]));
 	};
 	
-	var todoView = exports.todoView = function (handler, model) {
+	var todoView = exports.todoView = function (model) {
 	    return function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "section", function (children) {
-	                return new _FableHelpers.Html.Types.Node("Element", [tagName, [new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "todoapp"])]], children);
+	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "todoapp"])])], children);
 	            };
 	        }();
-	    }()(Array.from(_fableCore.Seq.append([todoHeader(model.Input, handler)], model.Items.length === 0 ? [] : [todoMain(model, handler), todoFooter(model, handler)])));
+	    }()(_fableCore.List.ofArray([todoHeader(model.Input)], model.Items.tail == null ? new _fableCore.List() : _fableCore.List.ofArray([todoMain(model), todoFooter(model)])));
 	};
 	
 	var Storage = exports.Storage = function ($exports) {
@@ -420,24 +359,20 @@
 	}({});
 	
 	var initList = exports.initList = function () {
-	    return [];
+	    return new _fableCore.List();
 	};
 	
 	var initModel = exports.initModel = (Filter_1 = new Filter("All"), new TodoModel(initList(), "", Filter_1));
 	
-	var todoApp = exports.todoApp = _FableHelpers.App.withStartNode("#todo", _FableHelpers.App.createApp(new _FableHelpers.App.AppState(initModel, function (handler) {
-	    return function (model) {
-	        return todoView(handler, model);
-	    };
+	var todoApp = exports.todoApp = _FableHelpers.App.withStartNode("#todo", _FableHelpers.App.createApp(new _FableHelpers.App.AppState(initModel, function (model) {
+	    return todoView(model);
 	}, function (model) {
 	    return function (msg) {
 	        return todoUpdate(model, msg);
 	    };
 	})));
 	
-	(function (app) {
-	    return _FableHelpers.App.start(_FableHelpers.renderer, app);
-	})(todoApp);
+	_FableHelpers.App.start((0, _FableHelpers.renderer)(), todoApp);
 
 
 /***/ },
@@ -3129,7 +3064,7 @@
 	        return renderTree = function (view) {
 	            return function (handler) {
 	                return function (model) {
-	                    return renderer.Render(view(handler)(model));
+	                    return renderer.Render(handler)(view(model));
 	                };
 	            };
 	        }, startElem = (matchValue = app.NodeSelector, matchValue != null ? (sel = matchValue, document.body.querySelector(sel)) : document.body), _fableCore.MailboxProcessor.start(function (inbox) {
@@ -3164,36 +3099,46 @@
 	    return $exports;
 	}({});
 	
-	var createTree = exports.createTree = function (tag, attributes, children) {
-	    var toAttrs, hAttrs, childrenArr;
+	var createTree = exports.createTree = function (handler, tag, attributes, children) {
+	    var toAttrs;
 	    return toAttrs = function (attrs) {
 	        return _fableCore.Util.createObj(_fableCore.List.map(function (_arg1) {
-	            var keyValue, binding, style;
-	            return _arg1.Case === "Property" ? (keyValue = _arg1.Fields[0], keyValue) : _arg1.Case === "Attribute" ? (keyValue = _arg1.Fields[0], keyValue) : _arg1.Case === "EventHandlerBinding" ? (binding = _arg1.Fields[0], binding.Fields[0]) : (style = _arg1.Fields[0], ["style", _fableCore.Util.createObj(style)]);
+	            var keyValue, binding, f, ev, style;
+	            return _arg1.Case === "Property" ? (keyValue = _arg1.Fields[0], keyValue) : _arg1.Case === "Attribute" ? (keyValue = _arg1.Fields[0], keyValue) : _arg1.Case === "EventHandlerBinding" ? (binding = _arg1.Fields[0], binding.Case === "KeyboardEventHandler" ? (f = binding.Fields[0][1], ev = binding.Fields[0][0], [ev, function ($var1) {
+	                return handler(f($var1));
+	            }]) : binding.Case === "EventHandler" ? (f = binding.Fields[0][1], ev = binding.Fields[0][0], [ev, function ($var2) {
+	                return handler(f($var2));
+	            }]) : (f = binding.Fields[0][1], ev = binding.Fields[0][0], [ev, function ($var3) {
+	                return handler(f($var3));
+	            }])) : (style = _arg1.Fields[0], ["style", _fableCore.Util.createObj(style)]);
 	        }, attrs));
-	    }, hAttrs = toAttrs(attributes), childrenArr = Array.from(children), (0, _virtualDom.h)(tag, hAttrs, childrenArr);
+	    }, (0, _virtualDom.h)(tag, toAttrs(attributes), Array.from(children));
 	};
 	
-	var render = exports.render = function (node) {
+	var render = exports.render = function (handler, node) {
 	    var tag, attrs, str, nodes;
-	    return node.Case === "VoidElement" ? (tag = node.Fields[0][0], attrs = node.Fields[0][1], createTree(tag, attrs, new _fableCore.List())) : node.Case === "Text" ? (str = node.Fields[0], str) : node.Case === "WhiteSpace" ? (str = node.Fields[0], str) : (tag = node.Fields[0][0], nodes = node.Fields[1], attrs = node.Fields[0][1], createTree(tag, attrs, _fableCore.List.map(function (node_1) {
-	        return render(node_1);
+	    return node.Case === "VoidElement" ? (tag = node.Fields[0][0], attrs = node.Fields[0][1], createTree(handler, tag, attrs, new _fableCore.List())) : node.Case === "Text" ? (str = node.Fields[0], str) : node.Case === "WhiteSpace" ? (str = node.Fields[0], str) : (tag = node.Fields[0][0], nodes = node.Fields[1], attrs = node.Fields[0][1], createTree(handler, tag, attrs, _fableCore.List.map(function (node_1) {
+	        return render(handler, node_1);
 	    }, nodes)));
 	};
 	
-	var renderer = exports.renderer = new App.Renderer(function (node) {
-	    return render(node);
-	}, function (tree1) {
-	    return function (tree2) {
-	        return (0, _virtualDom.diff)(tree1, tree2);
-	    };
-	}, function (node) {
-	    return function (patches) {
-	        return (0, _virtualDom.patch)(node, patches);
-	    };
-	}, function (e) {
-	    return (0, _virtualDom.create)(e);
-	});
+	var renderer = exports.renderer = function () {
+	    return new App.Renderer(function (handler) {
+	        return function (node) {
+	            return render(handler, node);
+	        };
+	    }, function (tree1) {
+	        return function (tree2) {
+	            return (0, _virtualDom.diff)(tree1, tree2);
+	        };
+	    }, function (node) {
+	        return function (patches) {
+	            return (0, _virtualDom.patch)(node, patches);
+	        };
+	    }, function (e) {
+	        return (0, _virtualDom.create)(e);
+	    });
+	};
 
 
 /***/ },
