@@ -317,22 +317,30 @@ module App =
 
     type Subscriber<'TMessage, 'TModel> = AppEvents<'TMessage, 'TModel> -> unit
 
+    type RenderState = 
+        | InProgress
+        | NoRequest
+
     type App<'TModel, 'TMessage> =
         {
             AppState: AppState<'TModel, 'TMessage>
+            JsCalls: (unit -> unit) list
             Node: Node option
             CurrentTree: obj option
             Subscribers: Map<string, Subscriber<'TMessage, 'TModel>>
             NodeSelector: string option
+            RenderState: RenderState
         }
 
     let createApp appState =
         {
             AppState = appState
+            JsCalls = []
             Node = None
             CurrentTree = None
             Subscribers = Map.empty
             NodeSelector = None
+            RenderState = NoRequest
         }
 
     let withStartNode selector app = { app with NodeSelector = Some selector }
@@ -379,18 +387,26 @@ module App =
                         startElem.appendChild(rootNode) |> ignore
                         return! loop {state with CurrentTree = Some tree; Node = Some rootNode}
                     | Some rootNode, Some currentTree ->
-                        let! message = inbox.Receive()
-                        match message with
-                        | Message msg ->
-                            ActionReceived msg |> (notifySubscribers state.Subscribers)
-                            let (model', jsCalls) = state.AppState.Update state.AppState.Model msg
-                            let tree = renderTree state.AppState.View post model'
+                        try
+                            let! message = 
+                                match state.RenderState with
+                                | NoRequest -> inbox.Receive()
+                                | InProgress -> inbox.Receive(1000/60)
+                            match message with
+                            | Message msg ->
+                                ActionReceived msg |> (notifySubscribers state.Subscribers)
+                                let (model', jsCalls) = state.AppState.Update state.AppState.Model msg
+                                return! loop {state with AppState = {state.AppState with Model = model'}; JsCalls = jsCalls @ state.JsCalls}
+                            | _ -> return! loop state
+                        with
+                        | _ -> 
+                            let model = state.AppState.Model
+                            let tree = renderTree state.AppState.View post model
                             let patches = renderer.Diff currentTree tree
-                            notifySubscribers state.Subscribers (ModelChanged (model', state.AppState.Model))
                             renderer.Patch rootNode patches |> ignore
-                            jsCalls |> List.iter (fun i -> i())
-                            return! loop {state with AppState = {state.AppState with Model = model'}; CurrentTree = Some tree}
-                        | _ -> return! loop state
+                            notifySubscribers state.Subscribers (ModelChanged (model, state.AppState.Model))
+                            state.JsCalls |> List.iter (fun i -> i())
+                            return! loop {state with RenderState = NoRequest; CurrentTree = Some tree; JsCalls = []}
                     | _ -> failwith "Shouldn't happen"
                 }
             loop app)
