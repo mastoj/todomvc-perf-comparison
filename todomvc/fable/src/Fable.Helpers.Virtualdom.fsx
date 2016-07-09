@@ -299,12 +299,6 @@ open Fable.Import.Browser
 
 [<AutoOpen>]
 module App =
-    type Observer<'T>(next, error, completed) =
-        interface System.IObserver<'T> with
-            member x.OnCompleted() = completed()
-            member x.OnError(e) = error e
-            member x.OnNext(v) = next v
-
     type AppState<'TModel, 'TMessage> = {
             Model: 'TModel
             View: 'TModel -> Html.Types.Node<'TMessage>
@@ -332,6 +326,23 @@ module App =
             RenderState: RenderState
         }
 
+    type ScheduleMessage = 
+        | PingIn of float*(unit -> unit)
+
+    type AppMessage<'TMessage> =
+        | AddSubscriber of string*Subscriber<'TMessage, 'TMessage>
+        | RemoveSubscriber of string
+        | Message of 'TMessage
+        | Draw
+
+    type Renderer<'TMessage> =
+        {
+            Render: ('TMessage -> unit) -> Html.Types.Node<'TMessage> -> obj
+            Diff: obj -> obj -> obj
+            Patch: Fable.Import.Browser.Node -> obj -> Fable.Import.Browser.Node
+            CreateElement: obj -> Fable.Import.Browser.Node
+        }
+
     let createApp appState =
         {
             AppState = appState
@@ -348,18 +359,18 @@ module App =
         let subsribers = app.Subscribers |> Map.add subscriberId subscriber
         { app with Subscribers = subsribers }
 
-    type AppMessage<'TMessage> =
-        | AddSubscriber of string*Subscriber<'TMessage, 'TMessage>
-        | RemoveSubscriber of string
-        | Message of 'TMessage
-
-    type Renderer<'TMessage> =
-        {
-            Render: ('TMessage -> unit) -> Html.Types.Node<'TMessage> -> obj
-            Diff: obj -> obj -> obj
-            Patch: Fable.Import.Browser.Node -> obj -> Fable.Import.Browser.Node
-            CreateElement: obj -> Fable.Import.Browser.Node
-        }
+    let createScheduler() = 
+        MailboxProcessor.Start(fun inbox ->
+            let rec loop() = 
+                async {
+                    let! message = inbox.Receive()
+                    match message with
+                    | PingIn (milliseconds, cb) ->
+                        window.setTimeout(cb, milliseconds) |> ignore
+                        return! loop()
+                }
+            loop()
+        )
 
     let start renderer app =
         let renderTree view handler model =
@@ -371,6 +382,8 @@ module App =
             | None -> document.body
             | Some sel -> document.body.querySelector(sel) :?> HTMLElement
 
+        
+        let scheduler = createScheduler()
         MailboxProcessor.Start(fun inbox ->
             let post message =
                 inbox.Post (Message message)
@@ -387,26 +400,44 @@ module App =
                         startElem.appendChild(rootNode) |> ignore
                         return! loop {state with CurrentTree = Some tree; Node = Some rootNode}
                     | Some rootNode, Some currentTree ->
-                        try
-                            let! message = 
-                                match state.RenderState with
-                                | NoRequest -> inbox.Receive()
-                                | InProgress -> inbox.Receive(1000/60)
-                            match message with
-                            | Message msg ->
-                                ActionReceived msg |> (notifySubscribers state.Subscribers)
-                                let (model', jsCalls) = state.AppState.Update state.AppState.Model msg
-                                return! loop {state with AppState = {state.AppState with Model = model'}; JsCalls = jsCalls @ state.JsCalls}
-                            | _ -> return! loop state
-                        with
-                        | _ -> 
+                        let! message = inbox.Receive()
+
+                        match message with
+                        | Message msg ->
+                            ActionReceived msg |> (notifySubscribers state.Subscribers)
+                            let (model', jsCalls) = state.AppState.Update state.AppState.Model msg
+
+                            match state.RenderState with
+                            | NoRequest ->
+                                scheduler.Post(PingIn(1000./60., (fun() -> inbox.Post(Draw))))
+                            | InProgress -> ()
+
+                            return! loop {state with AppState = {state.AppState with Model = model'}; RenderState = InProgress; JsCalls = state.JsCalls @ jsCalls}
+
+
+//                            return! loop {state with AppState = {state.AppState with Model = model'}; JsCalls = jsCalls @ state.JsCalls}
+                        | Draw -> 
+                            printfn "Drawing"
                             let model = state.AppState.Model
+                            let jsCalls = state.JsCalls
                             let tree = renderTree state.AppState.View post model
                             let patches = renderer.Diff currentTree tree
                             renderer.Patch rootNode patches |> ignore
-                            notifySubscribers state.Subscribers (ModelChanged (model, state.AppState.Model))
-                            state.JsCalls |> List.iter (fun i -> i())
+                            jsCalls |> List.iter (fun i -> i())
+
+                            (ModelChanged (model, state.AppState.Model)) |> notifySubscribers state.Subscribers
+
                             return! loop {state with RenderState = NoRequest; CurrentTree = Some tree; JsCalls = []}
+                        | _ -> return! loop state
+//                        with
+//                        | _ -> 
+//                            let model = state.AppState.Model
+//                            let tree = renderTree state.AppState.View post model
+//                            let patches = renderer.Diff currentTree tree
+//                            renderer.Patch rootNode patches |> ignore
+//                            notifySubscribers state.Subscribers (ModelChanged (model, state.AppState.Model))
+//                            state.JsCalls |> List.iter (fun i -> i())
+//                            return! loop {state with RenderState = NoRequest; CurrentTree = Some tree; JsCalls = []}
                     | _ -> failwith "Shouldn't happen"
                 }
             loop app)
