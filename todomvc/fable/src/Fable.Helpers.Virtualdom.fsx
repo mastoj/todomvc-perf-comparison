@@ -314,7 +314,7 @@ module App =
     type RenderState = 
         | InProgress
         | NoRequest
-        | ExtraRequest
+//        | ExtraRequest
 
     type App<'TModel, 'TMessage> =
         {
@@ -413,22 +413,18 @@ module App =
                                 | NoRequest ->
                                     scheduler.Post(PingIn(1000./60., (fun() -> inbox.Post(Draw))))
                                     InProgress
-                                | InProgress | ExtraRequest ->
-                                    scheduler.Post(PingIn(1000./60., (fun() -> inbox.Post(Draw))))
-                                    ExtraRequest
+                                | InProgress -> InProgress
+//                                    ExtraRequest
                             return! loop {
                                 state with 
                                     AppState = { state.AppState with Model = model' }
                                     RenderState = renderState
                                     JsCalls = state.JsCalls @ jsCalls }
                         | Draw -> 
-                            let renderState = 
-                                match state.RenderState with
-                                | InProgress -> NoRequest
-                                | ExtraRequest -> InProgress
-                                | NoRequest -> raise (exn "Shouldn't happen")
-                            match renderState with
-                            | NoRequest ->
+//                            let renderState = 
+                            match state.RenderState with
+                            | InProgress ->
+//                                | ExtraRequest -> InProgress
                                 let model = state.AppState.Model
 
                                 let jsCalls = state.JsCalls
@@ -439,8 +435,11 @@ module App =
 
                                 (ModelChanged (model, state.AppState.Model)) |> notifySubscribers state.Subscribers
 
-                                return! loop {state with RenderState = renderState; CurrentTree = Some tree; JsCalls = []}
-                            | _ -> return! loop {state with RenderState = renderState}
+                                return! loop {state with RenderState = NoRequest; CurrentTree = Some tree; JsCalls = []}
+                            | NoRequest -> raise (exn "Shouldn't happen")
+//                            match renderState with
+//                            | NoRequest ->
+//                            | _ -> return! loop {state with RenderState = renderState}
                         | _ -> return! loop state
 //                        with
 //                        | _ -> 
