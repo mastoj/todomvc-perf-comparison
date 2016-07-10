@@ -279,11 +279,10 @@ let todoHeader model =
                     attribute "id" "new-todo"
                     property "placeholder" "What needs to be done?"
                     property "value" model
-                    onKeydown (fun x ->
+                    onKeyup (fun x ->
                         if x.keyCode = 13
                         then (AddItem {Name = model; Id = 0; Done = false; IsEditing = false})
-                        else Noop)
-                    onKeyup (fun x -> (ChangeInput (x?target?value :?> string))) ]]
+                        else ChangeInput (x?target?value :?> string)) ]]
 
 let listItem item =
     let itemChecked = if item.Done then "true" else ""

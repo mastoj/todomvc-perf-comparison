@@ -314,6 +314,7 @@ module App =
     type RenderState = 
         | InProgress
         | NoRequest
+        | ExtraRequest
 
     type App<'TModel, 'TMessage> =
         {
@@ -407,27 +408,47 @@ module App =
                             ActionReceived msg |> (notifySubscribers state.Subscribers)
                             let (model', jsCalls) = state.AppState.Update state.AppState.Model msg
 
-                            match state.RenderState with
-                            | NoRequest ->
-                                scheduler.Post(PingIn(1000./60., (fun() -> inbox.Post(Draw))))
-                            | InProgress -> ()
-
-                            return! loop {state with AppState = {state.AppState with Model = model'}; RenderState = InProgress; JsCalls = state.JsCalls @ jsCalls}
+                            let renderState =
+                                match state.RenderState with
+                                | NoRequest ->
+                                    scheduler.Post(PingIn(1000./60., (fun() -> inbox.Post(Draw))))
+                                    InProgress
+                                | InProgress | ExtraRequest ->
+                                    scheduler.Post(PingIn(1000./60., (fun() -> inbox.Post(Draw))))
+                                    ExtraRequest
+                            printfn "Message"
+                            printfn "%A" msg
+                            printfn "%A" model'
+                            return! loop {
+                                state with 
+                                    AppState = { state.AppState with Model = model' }
+                                    RenderState = renderState
+                                    JsCalls = state.JsCalls @ jsCalls }
 
 
 //                            return! loop {state with AppState = {state.AppState with Model = model'}; JsCalls = jsCalls @ state.JsCalls}
                         | Draw -> 
-                            printfn "Drawing"
-                            let model = state.AppState.Model
-                            let jsCalls = state.JsCalls
-                            let tree = renderTree state.AppState.View post model
-                            let patches = renderer.Diff currentTree tree
-                            renderer.Patch rootNode patches |> ignore
-                            jsCalls |> List.iter (fun i -> i())
+                            let renderState = 
+                                match state.RenderState with
+                                | InProgress -> NoRequest
+                                | ExtraRequest -> InProgress
+                                | NoRequest -> raise (exn "Shouldn't happen")
+                            match renderState with
+                            | NoRequest ->
+                                let model = state.AppState.Model
+                                printfn "Draw"
+                                printfn "%A" model
 
-                            (ModelChanged (model, state.AppState.Model)) |> notifySubscribers state.Subscribers
+                                let jsCalls = state.JsCalls
+                                let tree = renderTree state.AppState.View post model
+                                let patches = renderer.Diff currentTree tree
+                                renderer.Patch rootNode patches |> ignore
+                                jsCalls |> List.iter (fun i -> i())
 
-                            return! loop {state with RenderState = NoRequest; CurrentTree = Some tree; JsCalls = []}
+                                (ModelChanged (model, state.AppState.Model)) |> notifySubscribers state.Subscribers
+
+                                return! loop {state with RenderState = renderState; CurrentTree = Some tree; JsCalls = []}
+                            | _ -> return! loop {state with RenderState = renderState}
                         | _ -> return! loop state
 //                        with
 //                        | _ -> 

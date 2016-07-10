@@ -279,7 +279,7 @@ Suites.push({
                 newTodo.dispatchEvent(inputEvent);
 
                 var keydownEvent = document.createEvent('Event');
-                keydownEvent.initEvent('keydown', true, true);
+                keydownEvent.initEvent('keyup', true, true);
                 keydownEvent.keyCode = 13; // VK_ENTER
                 newTodo.dispatchEvent(keydownEvent);
             }
