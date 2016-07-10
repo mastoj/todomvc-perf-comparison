@@ -281,8 +281,8 @@ let todoHeader model =
                     property "value" model
                     onKeyup (fun x ->
                         if x.keyCode = 13
-                        then (AddItem {Name = model; Id = 0; Done = false; IsEditing = false})
-                        else ChangeInput (x?target?value :?> string)) ]]
+                        then printfn "Add item %A" x; (AddItem {Name = model; Id = 0; Done = false; IsEditing = false})
+                        else printfn "Change input"; ChangeInput (x?target?value :?> string)) ]]
 
 let listItem item =
     let itemChecked = if item.Done then "true" else ""

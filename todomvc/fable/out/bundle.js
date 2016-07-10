@@ -238,7 +238,18 @@
 	        }();
 	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "todos")])), new _FableHelpers.Html.Types.Node("VoidElement", ["input", _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Attribute", ["id", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Property", ["placeholder", "What needs to be done?"]), new _FableHelpers.Html.Types.Attribute("Property", ["value", model]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("KeyboardEventHandler", ["onkeyup", function (x) {
 	        var Id;
-	        return x.keyCode === 13 ? new TodoAction("AddItem", (Id = 0, new Item(model, false, Id, false))) : new TodoAction("ChangeInput", x.target.value);
+	        return x.keyCode === 13 ? (function () {
+	            return function () {
+	                var clo1;
+	                return clo1 = _fableCore.String.fsFormat("Add item %A")(function (x) {
+	                    console.log(x);
+	                }), function (arg10) {
+	                    clo1(arg10);
+	                };
+	            }();
+	        }()(x), new TodoAction("AddItem", (Id = 0, new Item(model, false, Id, false)))) : (_fableCore.String.fsFormat("Change input")(function (x) {
+	            console.log(x);
+	        }), new TodoAction("ChangeInput", x.target.value));
 	    }]))])])]));
 	};
 	
