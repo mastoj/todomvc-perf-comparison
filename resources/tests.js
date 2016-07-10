@@ -1,4 +1,4 @@
-var numberOfItemsToAdd = 100;
+var numberOfItemsToAdd = 5;
 var Suites = [];
 
 //Suites.push({

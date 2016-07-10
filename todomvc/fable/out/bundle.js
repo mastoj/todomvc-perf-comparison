@@ -107,7 +107,29 @@
 	
 	var todoUpdate = exports.todoUpdate = function (model, msg) {
 	    var checkAllWith, updateItem, model_, jsCalls, v, i, items_, f, item, maxId, item_, Id;
-	    return checkAllWith = function (v) {
+	    return _fableCore.String.fsFormat("Updating model")(function (x) {
+	        console.log(x);
+	    }), function () {
+	        return function () {
+	            var clo1;
+	            return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
+	                console.log(x);
+	            }), function (arg10) {
+	                clo1(arg10);
+	            };
+	        }();
+	    }()(model), _fableCore.String.fsFormat("With message")(function (x) {
+	        console.log(x);
+	    }), function () {
+	        return function () {
+	            var clo1;
+	            return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
+	                console.log(x);
+	            }), function (arg10) {
+	                clo1(arg10);
+	            };
+	        }();
+	    }()(msg), checkAllWith = function (v) {
 	        return new TodoModel(_fableCore.List.map(function (i) {
 	            return new Item(i.Name, v, i.Id, i.IsEditing);
 	        }, model.Items), model.Input, model.Filter);
@@ -136,7 +158,18 @@
 	        return str = msg.Fields[1], i = msg.Fields[0], updateItem((IsEditing = false, new Item(str, i.Done, i.Id, IsEditing)))(model);
 	    }() : msg.Case === "Noop" ? model : (item = msg.Fields[0], maxId = model.Items.tail == null ? 1 : _fableCore.Seq.max(_fableCore.List.map(function (x) {
 	        return x.Id;
-	    }, model.Items)), item_ = (Id = maxId + 1, new Item(item.Name, item.Done, Id, item.IsEditing)), new TodoModel(_fableCore.List.ofArray([item_], model.Items), "", model.Filter)), jsCalls = msg.Case === "EditItem" ? (i = msg.Fields[0], _fableCore.List.ofArray([function (unitVar0) {
+	    }, model.Items)), item_ = (Id = maxId + 1, new Item(item.Name, item.Done, Id, item.IsEditing)), new TodoModel(_fableCore.List.ofArray([item_], model.Items), "", model.Filter)), _fableCore.String.fsFormat("Model updated")(function (x) {
+	        console.log(x);
+	    }), function () {
+	        return function () {
+	            var clo1;
+	            return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
+	                console.log(x);
+	            }), function (arg10) {
+	                clo1(arg10);
+	            };
+	        }();
+	    }()(model_), jsCalls = msg.Case === "EditItem" ? (i = msg.Fields[0], _fableCore.List.ofArray([function (unitVar0) {
 	        document.getElementById("item-" + i.Id.toString()).focus();
 	    }])) : new _fableCore.List(), [model_, jsCalls];
 	};
@@ -237,17 +270,37 @@
 	            };
 	        }();
 	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "todos")])), new _FableHelpers.Html.Types.Node("VoidElement", ["input", _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Attribute", ["id", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Property", ["placeholder", "What needs to be done?"]), new _FableHelpers.Html.Types.Attribute("Property", ["value", model]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("KeyboardEventHandler", ["onkeyup", function (x) {
-	        var Id;
-	        return x.keyCode === 13 ? (function () {
+	        var text, Id;
+	        return text = x.target.value, function () {
 	            return function () {
 	                var clo1;
-	                return clo1 = _fableCore.String.fsFormat("Add item %A")(function (x) {
+	                return clo1 = _fableCore.String.fsFormat("Text: %s")(function (x) {
 	                    console.log(x);
 	                }), function (arg10) {
 	                    clo1(arg10);
 	                };
 	            }();
-	        }()(x), new TodoAction("AddItem", (Id = 0, new Item(model, false, Id, false)))) : (_fableCore.String.fsFormat("Change input")(function (x) {
+	        }()(text), function () {
+	            return function () {
+	                var clo1;
+	                return clo1 = _fableCore.String.fsFormat("Keycode: %i")(function (x) {
+	                    console.log(x);
+	                }), function (arg10) {
+	                    clo1(arg10);
+	                };
+	            }();
+	        }()(x.keyCode), function () {
+	            return function () {
+	                var clo1;
+	                return clo1 = _fableCore.String.fsFormat("Model: %A")(function (x) {
+	                    console.log(x);
+	                }), function (arg10) {
+	                    clo1(arg10);
+	                };
+	            }();
+	        }()(model), x.keyCode === 13 ? (_fableCore.String.fsFormat("Add item")(function (x) {
+	            console.log(x);
+	        }), new TodoAction("AddItem", (Id = 0, new Item(text, false, Id, false)))) : (_fableCore.String.fsFormat("Change input")(function (x) {
 	            console.log(x);
 	        }), new TodoAction("ChangeInput", x.target.value));
 	    }]))])])]));
@@ -352,7 +405,18 @@
 	});
 	
 	var todoView = exports.todoView = function (model) {
-	    return function () {
+	    return _fableCore.String.fsFormat("View model: ")(function (x) {
+	        console.log(x);
+	    }), function () {
+	        return function () {
+	            var clo1;
+	            return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
+	                console.log(x);
+	            }), function (arg10) {
+	                clo1(arg10);
+	            };
+	        }();
+	    }()(model), function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "section", function (children) {
