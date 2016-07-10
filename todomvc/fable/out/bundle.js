@@ -106,30 +106,8 @@
 	_fableCore.Util.setInterfaces(TodoAction.prototype, [], "Virtualdom.TodoAction");
 	
 	var todoUpdate = exports.todoUpdate = function (model, msg) {
-	    var checkAllWith, updateItem, model_, jsCalls, v, i, items_, f, item, maxId, item_, Id;
-	    return _fableCore.String.fsFormat("Updating model")(function (x) {
-	        console.log(x);
-	    }), function () {
-	        return function () {
-	            var clo1;
-	            return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
-	                console.log(x);
-	            }), function (arg10) {
-	                clo1(arg10);
-	            };
-	        }();
-	    }()(model), _fableCore.String.fsFormat("With message")(function (x) {
-	        console.log(x);
-	    }), function () {
-	        return function () {
-	            var clo1;
-	            return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
-	                console.log(x);
-	            }), function (arg10) {
-	                clo1(arg10);
-	            };
-	        }();
-	    }()(msg), checkAllWith = function (v) {
+	    var checkAllWith, updateItem, model_, jsCalls, v, i, items_, f, maxId, item_, Id, Done, IsEditing;
+	    return checkAllWith = function (v) {
 	        return new TodoModel(_fableCore.List.map(function (i) {
 	            return new Item(i.Name, v, i.Id, i.IsEditing);
 	        }, model.Items), model.Input, model.Filter);
@@ -156,20 +134,9 @@
 	    }() : msg.Case === "SaveItem" ? function () {
 	        var str, i, IsEditing;
 	        return str = msg.Fields[1], i = msg.Fields[0], updateItem((IsEditing = false, new Item(str, i.Done, i.Id, IsEditing)))(model);
-	    }() : msg.Case === "Noop" ? model : (item = msg.Fields[0], maxId = model.Items.tail == null ? 1 : _fableCore.Seq.max(_fableCore.List.map(function (x) {
+	    }() : msg.Case === "Noop" ? model : (maxId = model.Items.tail == null ? 1 : _fableCore.Seq.max(_fableCore.List.map(function (x) {
 	        return x.Id;
-	    }, model.Items)), item_ = (Id = maxId + 1, new Item(item.Name, item.Done, Id, item.IsEditing)), new TodoModel(_fableCore.List.ofArray([item_], model.Items), "", model.Filter)), _fableCore.String.fsFormat("Model updated")(function (x) {
-	        console.log(x);
-	    }), function () {
-	        return function () {
-	            var clo1;
-	            return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
-	                console.log(x);
-	            }), function (arg10) {
-	                clo1(arg10);
-	            };
-	        }();
-	    }()(model_), jsCalls = msg.Case === "EditItem" ? (i = msg.Fields[0], _fableCore.List.ofArray([function (unitVar0) {
+	    }, model.Items)), item_ = (Id = maxId + 1, Done = false, IsEditing = false, new Item(model.Input, Done, Id, IsEditing)), new TodoModel(_fableCore.List.ofArray([item_], model.Items), "", model.Filter)), jsCalls = msg.Case === "EditItem" ? (i = msg.Fields[0], _fableCore.List.ofArray([function (unitVar0) {
 	        document.getElementById("item-" + i.Id.toString()).focus();
 	    }])) : new _fableCore.List(), [model_, jsCalls];
 	};
@@ -270,39 +237,7 @@
 	            };
 	        }();
 	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "todos")])), new _FableHelpers.Html.Types.Node("VoidElement", ["input", _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Attribute", ["id", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Property", ["placeholder", "What needs to be done?"]), new _FableHelpers.Html.Types.Attribute("Property", ["value", model]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("KeyboardEventHandler", ["onkeyup", function (x) {
-	        var text, Id;
-	        return text = x.target.value, function () {
-	            return function () {
-	                var clo1;
-	                return clo1 = _fableCore.String.fsFormat("Text: %s")(function (x) {
-	                    console.log(x);
-	                }), function (arg10) {
-	                    clo1(arg10);
-	                };
-	            }();
-	        }()(text), function () {
-	            return function () {
-	                var clo1;
-	                return clo1 = _fableCore.String.fsFormat("Keycode: %i")(function (x) {
-	                    console.log(x);
-	                }), function (arg10) {
-	                    clo1(arg10);
-	                };
-	            }();
-	        }()(x.keyCode), function () {
-	            return function () {
-	                var clo1;
-	                return clo1 = _fableCore.String.fsFormat("Model: %A")(function (x) {
-	                    console.log(x);
-	                }), function (arg10) {
-	                    clo1(arg10);
-	                };
-	            }();
-	        }()(model), x.keyCode === 13 ? (_fableCore.String.fsFormat("Add item")(function (x) {
-	            console.log(x);
-	        }), new TodoAction("AddItem", (Id = 0, new Item(text, false, Id, false)))) : (_fableCore.String.fsFormat("Change input")(function (x) {
-	            console.log(x);
-	        }), new TodoAction("ChangeInput", x.target.value));
+	        return x.keyCode === 13 ? new TodoAction("AddItem") : new TodoAction("ChangeInput", x.target.value);
 	    }]))])])]));
 	};
 	
@@ -405,18 +340,7 @@
 	});
 	
 	var todoView = exports.todoView = function (model) {
-	    return _fableCore.String.fsFormat("View model: ")(function (x) {
-	        console.log(x);
-	    }), function () {
-	        return function () {
-	            var clo1;
-	            return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
-	                console.log(x);
-	            }), function (arg10) {
-	                clo1(arg10);
-	            };
-	        }();
-	    }()(model), function () {
+	    return function () {
 	        return function () {
 	            var tagName;
 	            return tagName = "section", function (children) {
@@ -3187,40 +3111,9 @@
 	                                })), new RenderState("ExtraRequest");
 	                            }, matchValue_1.Case === "InProgress" ? $target1() : matchValue_1.Case === "ExtraRequest" ? $target1() : (scheduler.post(new ScheduleMessage("PingIn", 1000 / 60, function (unitVar0) {
 	                                inbox.post(new AppMessage("Draw"));
-	                            })), new RenderState("InProgress"))), _fableCore.String.fsFormat("Message")(function (x) {
-	                                console.log(x);
-	                            }), function () {
-	                                return function () {
-	                                    var clo1;
-	                                    return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
-	                                        console.log(x);
-	                                    }), function (arg10) {
-	                                        clo1(arg10);
-	                                    };
-	                                }();
-	                            }()(msg), function () {
-	                                return function () {
-	                                    var clo1;
-	                                    return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
-	                                        console.log(x);
-	                                    }), function (arg10) {
-	                                        clo1(arg10);
-	                                    };
-	                                }();
-	                            }()(model_), builder_.returnFrom(loop((AppState_1 = (inputRecord = state.AppState, new AppState(model_, inputRecord.View, inputRecord.Update)), new App(AppState_1, _fableCore.List.append(state.JsCalls, jsCalls), state.Node, state.CurrentTree, state.Subscribers, state.NodeSelector, renderState))))) : message.Case === "Draw" ? (renderState = (matchValue_1 = state.RenderState, matchValue_1.Case === "ExtraRequest" ? new RenderState("InProgress") : matchValue_1.Case === "NoRequest" ? function () {
+	                            })), new RenderState("InProgress"))), builder_.returnFrom(loop((AppState_1 = (inputRecord = state.AppState, new AppState(model_, inputRecord.View, inputRecord.Update)), new App(AppState_1, _fableCore.List.append(state.JsCalls, jsCalls), state.Node, state.CurrentTree, state.Subscribers, state.NodeSelector, renderState))))) : message.Case === "Draw" ? (renderState = (matchValue_1 = state.RenderState, matchValue_1.Case === "ExtraRequest" ? new RenderState("InProgress") : matchValue_1.Case === "NoRequest" ? function () {
 	                                throw "Shouldn't happen";
-	                            }() : new RenderState("NoRequest")), renderState.Case === "NoRequest" ? (model = state.AppState.Model, _fableCore.String.fsFormat("Draw")(function (x) {
-	                                console.log(x);
-	                            }), function () {
-	                                return function () {
-	                                    var clo1;
-	                                    return clo1 = _fableCore.String.fsFormat("%A")(function (x) {
-	                                        console.log(x);
-	                                    }), function (arg10) {
-	                                        clo1(arg10);
-	                                    };
-	                                }();
-	                            }()(model), jsCalls = state.JsCalls, tree = renderTree(state.AppState.View)(post)(model), patches = renderer.Diff(currentTree)(tree), renderer.Patch(rootNode)(patches), _fableCore.Seq.iter(function (i) {
+	                            }() : new RenderState("NoRequest")), renderState.Case === "NoRequest" ? (model = state.AppState.Model, jsCalls = state.JsCalls, tree = renderTree(state.AppState.View)(post)(model), patches = renderer.Diff(currentTree)(tree), renderer.Patch(rootNode)(patches), _fableCore.Seq.iter(function (i) {
 	                                i();
 	                            }, jsCalls), notifySubscribers(state.Subscribers)(new AppEvents("ModelChanged", model, state.AppState.Model)), builder_.returnFrom(loop((CurrentTree = tree, JsCalls = new _fableCore.List(), new App(state.AppState, JsCalls, state.Node, CurrentTree, state.Subscribers, state.NodeSelector, renderState))))) : builder_.returnFrom(loop(new App(state.AppState, state.JsCalls, state.Node, state.CurrentTree, state.Subscribers, state.NodeSelector, renderState)))) : builder_.returnFrom(loop(state));
 	                        })) : function () {

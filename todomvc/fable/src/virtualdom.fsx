@@ -160,7 +160,7 @@ is a nice feature you don't have in standard js.
 // Todo update
 type TodoAction =
     | Noop
-    | AddItem of Item
+    | AddItem
     | ChangeInput of string
     | MarkAsDone of Item
     | ToggleItem of Item
@@ -177,11 +177,6 @@ First we define the actual actions before moving on to the actual update functio
 *)
 
 let todoUpdate model msg =
-    printfn "Updating model"
-    printfn "%A" model
-    printfn "With message"
-    printfn "%A" msg
-
     let checkAllWith v =
         { model with Items = model.Items |> List.map (fun i -> { i with Done = v })}
 
@@ -192,14 +187,14 @@ let todoUpdate model msg =
 
     let model' =
         match msg with
-        | AddItem item ->
+        | AddItem ->
             let maxId =
                 if model.Items |> List.isEmpty then 1
                 else
                     model.Items
                     |> List.map (fun x -> x.Id)
                     |> List.max
-            let item' = {item with Id = maxId + 1}
+            let item' = {Id = maxId + 1; Done = false; IsEditing = false; Name = model.Input}
             {model with Items = item'::model.Items; Input = ""}
         | ChangeInput v -> {model with Input = v}
         | MarkAsDone i ->
@@ -215,8 +210,6 @@ let todoUpdate model msg =
         | EditItem i -> updateItem { i with IsEditing = true} model
         | SaveItem (i,str) -> updateItem { i with Name = str; IsEditing = false} model
         | Noop -> model
-    printfn "Model updated"
-    printfn "%A" model'
     let jsCalls =
         match msg with
         | EditItem i -> [fun () -> document.getElementById("item-" + (i.Id.ToString())).focus()]
@@ -286,13 +279,9 @@ let todoHeader model =
                     property "placeholder" "What needs to be done?"
                     property "value" model
                     onKeyup (fun x ->
-                        let text = (x?target?value :?> string)
-                        printfn "Text: %s" text
-                        printfn "Keycode: %i" x.keyCode
-                        printfn "Model: %A" model
                         if x.keyCode = 13
-                        then printfn "Add item"; (AddItem {Name = text; Id = 0; Done = false; IsEditing = false})
-                        else printfn "Change input"; ChangeInput (x?target?value :?> string)) ]]
+                        then AddItem
+                        else ChangeInput (x?target?value :?> string)) ]]
 
 let listItem item =
     let itemChecked = if item.Done then "true" else ""
@@ -344,8 +333,6 @@ let todoMain model =
 let memoizedFooter = memoize todoFooter
 let memoizedMain = memoize todoMain
 let todoView model =
-    printfn "View model: "
-    printfn "%A" model
     section
         [attribute "class" "todoapp"]
         ((todoHeader model.Input)::(if model.Items |> List.isEmpty

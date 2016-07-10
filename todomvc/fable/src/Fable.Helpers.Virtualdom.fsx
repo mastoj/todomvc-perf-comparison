@@ -416,17 +416,11 @@ module App =
                                 | InProgress | ExtraRequest ->
                                     scheduler.Post(PingIn(1000./60., (fun() -> inbox.Post(Draw))))
                                     ExtraRequest
-                            printfn "Message"
-                            printfn "%A" msg
-                            printfn "%A" model'
                             return! loop {
                                 state with 
                                     AppState = { state.AppState with Model = model' }
                                     RenderState = renderState
                                     JsCalls = state.JsCalls @ jsCalls }
-
-
-//                            return! loop {state with AppState = {state.AppState with Model = model'}; JsCalls = jsCalls @ state.JsCalls}
                         | Draw -> 
                             let renderState = 
                                 match state.RenderState with
@@ -436,8 +430,6 @@ module App =
                             match renderState with
                             | NoRequest ->
                                 let model = state.AppState.Model
-                                printfn "Draw"
-                                printfn "%A" model
 
                                 let jsCalls = state.JsCalls
                                 let tree = renderTree state.AppState.View post model
