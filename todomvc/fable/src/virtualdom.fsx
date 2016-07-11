@@ -277,7 +277,6 @@ let todoHeader model =
             input [ attribute "class" "new-todo"
                     attribute "id" "new-todo"
                     property "placeholder" "What needs to be done?"
-                    property "value" model
                     onKeyup (fun x ->
                         if x.keyCode = 13
                         then AddItem
@@ -301,7 +300,7 @@ let listItem item =
                  property "id" ("item-"+item.Id.ToString())
                  onBlur (fun e -> SaveItem (item, (e?target?value :?> string))) ] ]
 
-let memoizedListItem = memoize listItem
+//let memoizedListItem = memoize listItem
 let itemList (items,activeFilter) =
     let filterItems i =
         match activeFilter with
@@ -310,9 +309,8 @@ let itemList (items,activeFilter) =
         | Active -> not i.Done
 
     ul [attribute "class" "todo-list" ]
-       (items |> List.filter filterItems |> List.map memoizedListItem)
+       (items |> List.filter filterItems |> List.map listItem)
 
-let memoizedItemList = memoize itemList
 let todoMain model =
     let items = model.Items
     let allChecked = items |> List.exists (fun i -> not i.Done)
@@ -328,17 +326,15 @@ let todoMain model =
                                     else UnCheckAll) ]
                 label [ attribute "for" "toggle-all" ]
                       [ text "Mark all as complete" ]
-                (memoizedItemList (items, model.Filter)) ]
+                (itemList (items, model.Filter)) ]
 
-let memoizedFooter = memoize todoFooter
-let memoizedMain = memoize todoMain
 let todoView model =
     section
         [attribute "class" "todoapp"]
         ((todoHeader model.Input)::(if model.Items |> List.isEmpty
                 then []
-                else [  (memoizedMain model)
-                        (memoizedFooter model) ] ))
+                else [  (todoMain model)
+                        (todoFooter model) ] ))
 
 (**
 This view is more complex than the first example, but it also show how easy it is

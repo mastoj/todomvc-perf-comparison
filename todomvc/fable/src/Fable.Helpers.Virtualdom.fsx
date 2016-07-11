@@ -308,13 +308,13 @@ module App =
     type AppEvents<'TMessage, 'TModel> =
         | ModelChanged of 'TModel*'TModel
         | ActionReceived of 'TMessage
+        | DrawStarted
 
     type Subscriber<'TMessage, 'TModel> = AppEvents<'TMessage, 'TModel> -> unit
 
     type RenderState = 
         | InProgress
         | NoRequest
-//        | ExtraRequest
 
     type App<'TModel, 'TMessage> =
         {
@@ -414,17 +414,16 @@ module App =
                                     scheduler.Post(PingIn(1000./60., (fun() -> inbox.Post(Draw))))
                                     InProgress
                                 | InProgress -> InProgress
-//                                    ExtraRequest
                             return! loop {
                                 state with 
                                     AppState = { state.AppState with Model = model' }
                                     RenderState = renderState
                                     JsCalls = state.JsCalls @ jsCalls }
                         | Draw -> 
-//                            let renderState = 
                             match state.RenderState with
                             | InProgress ->
-//                                | ExtraRequest -> InProgress
+                                DrawStarted |> notifySubscribers state.Subscribers
+
                                 let model = state.AppState.Model
 
                                 let jsCalls = state.JsCalls
@@ -437,39 +436,37 @@ module App =
 
                                 return! loop {state with RenderState = NoRequest; CurrentTree = Some tree; JsCalls = []}
                             | NoRequest -> raise (exn "Shouldn't happen")
-//                            match renderState with
-//                            | NoRequest ->
-//                            | _ -> return! loop {state with RenderState = renderState}
                         | _ -> return! loop state
-//                        with
-//                        | _ -> 
-//                            let model = state.AppState.Model
-//                            let tree = renderTree state.AppState.View post model
-//                            let patches = renderer.Diff currentTree tree
-//                            renderer.Patch rootNode patches |> ignore
-//                            notifySubscribers state.Subscribers (ModelChanged (model, state.AppState.Model))
-//                            state.JsCalls |> List.iter (fun i -> i())
-//                            return! loop {state with RenderState = NoRequest; CurrentTree = Some tree; JsCalls = []}
                     | _ -> failwith "Shouldn't happen"
                 }
             loop app)
 
 let createTree<'T> (handler:'T -> unit) tag (attributes:Attribute<'T> list) children =
     let toAttrs (attrs:Attribute<'T> list) =
-        attrs
-        |> List.map (function
-            | Style style -> "style" ==> createObj(unbox style)
-            | Property keyValue -> unbox keyValue
-            | Attribute keyValue -> unbox keyValue
-            | EventHandlerBinding binding ->
-                match binding with
-                | MouseEventHandler(ev, f) -> ev, ((f >> handler) :> obj) //  unbox binding?Fields?(0) |> handler// Performance hack
-                | KeyboardEventHandler(ev, f) -> ev, ((f >> handler) :> obj) //  unbox binding?Fields?(0) |> handler// Performance hack
-                | EventHandler(ev, f) -> ev, ((f >> handler) :> obj) //  unbox binding?Fields?(0) |> handler// Performance hack
-//        type MouseEventHandler<'TMessage> = string*(MouseEvent -> 'TMessage)
-//        type KeyboardEventHandler<'TMessage> = string*(KeyboardEvent -> 'TMessage)
-//        type EventHandler<'TMessage> = string*(obj -> 'TMessage)
-        )
+        let elAttributes = 
+            attrs
+            |> List.map (function
+                | Attribute (k,v) -> (k ==> v) |> Some
+                | _ -> None)
+            |> List.choose id
+            |> (function | [] -> None | v -> Some ("attributes" ==> (createObj(v))))
+
+        let props =
+            attrs
+            |> List.filter (function | Attribute _ -> false | _ -> true)
+            |> List.map (function
+                | Style style -> "style" ==> createObj(unbox style)
+                | Property (k,v) -> k ==> v
+                | EventHandlerBinding binding ->
+                    match binding with
+                    | MouseEventHandler(ev, f) -> ev ==> ((f >> handler) :> obj)
+                    | KeyboardEventHandler(ev, f) -> ev ==> ((f >> handler) :> obj)
+                    | EventHandler(ev, f) -> ev ==> ((f >> handler) :> obj)
+            )
+
+        match elAttributes with
+        | None -> props
+        | Some x -> x::props
         |> createObj
     h(tag, toAttrs attributes, List.toArray children)
 
@@ -487,15 +484,3 @@ let renderer =
         Patch = patch
         CreateElement = createElement
     }
-
-open System.Collections.Generic
-let memoize f =
-    let cache = Dictionary<_, _>()
-    fun x ->
-        if cache.ContainsKey(x) 
-        then 
-            cache.[x]
-        else 
-            let res = f x
-            cache.[x] <- res
-            res

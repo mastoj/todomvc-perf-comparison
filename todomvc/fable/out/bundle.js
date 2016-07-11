@@ -49,7 +49,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.todoApp = exports.initModel = exports.initList = exports.Storage = exports.todoView = exports.memoizedMain = exports.memoizedFooter = exports.todoMain = exports.memoizedItemList = exports.itemList = exports.memoizedListItem = exports.listItem = exports.todoHeader = exports.todoFooter = exports.filters = exports.filter = exports.filterToTextAndUrl = exports.todoUpdate = exports.TodoAction = exports.TodoModel = exports.Item = exports.Filter = undefined;
+	exports.todoApp = exports.initModel = exports.initList = exports.Storage = exports.todoView = exports.todoMain = exports.itemList = exports.listItem = exports.todoHeader = exports.todoFooter = exports.filters = exports.filter = exports.filterToTextAndUrl = exports.todoUpdate = exports.TodoAction = exports.TodoModel = exports.Item = exports.Filter = undefined;
 	var Filter_1;
 	
 	var _fableCore = __webpack_require__(1);
@@ -236,7 +236,7 @@
 	                return new _FableHelpers.Html.Types.Node("Element", [tagName, new _fableCore.List()], children);
 	            };
 	        }();
-	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "todos")])), new _FableHelpers.Html.Types.Node("VoidElement", ["input", _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Attribute", ["id", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Property", ["placeholder", "What needs to be done?"]), new _FableHelpers.Html.Types.Attribute("Property", ["value", model]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("KeyboardEventHandler", ["onkeyup", function (x) {
+	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "todos")])), new _FableHelpers.Html.Types.Node("VoidElement", ["input", _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Attribute", ["id", "new-todo"]), new _FableHelpers.Html.Types.Attribute("Property", ["placeholder", "What needs to be done?"]), new _FableHelpers.Html.Types.Attribute("EventHandlerBinding", new _FableHelpers.Html.Types.EventHandlerBinding("KeyboardEventHandler", ["onkeyup", function (x) {
 	        return x.keyCode === 13 ? new TodoAction("AddItem") : new TodoAction("ChangeInput", x.target.value);
 	    }]))])])]));
 	};
@@ -282,10 +282,6 @@
 	    }]))])])]));
 	};
 	
-	var memoizedListItem = exports.memoizedListItem = (0, _FableHelpers.memoize)(function (item) {
-	    return listItem(item);
-	});
-	
 	var itemList = exports.itemList = function (items, activeFilter) {
 	    var filterItems;
 	    return filterItems = function (i) {
@@ -298,16 +294,13 @@
 	            };
 	        }();
 	    }()(function (list) {
-	        return _fableCore.List.map(memoizedListItem, list);
+	        return _fableCore.List.map(function (item) {
+	            return listItem(item);
+	        }, list);
 	    }(function (list) {
 	        return _fableCore.List.filter(filterItems, list);
 	    }(items)));
 	};
-	
-	var memoizedItemList = exports.memoizedItemList = (0, _FableHelpers.memoize)(function (tupledArg) {
-	    var items, activeFilter;
-	    return items = tupledArg[0], activeFilter = tupledArg[1], itemList(items, activeFilter);
-	});
 	
 	var todoMain = exports.todoMain = function (model) {
 	    var items, allChecked;
@@ -329,15 +322,8 @@
 	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["for", "toggle-all"])])], children);
 	            };
 	        }();
-	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "Mark all as complete")])), memoizedItemList([items, model.Filter])]));
+	    }()(_fableCore.List.ofArray([new _FableHelpers.Html.Types.Node("Text", "Mark all as complete")])), itemList(items, model.Filter)]));
 	};
-	
-	var memoizedFooter = exports.memoizedFooter = (0, _FableHelpers.memoize)(function (model) {
-	    return todoFooter(model);
-	});
-	var memoizedMain = exports.memoizedMain = (0, _FableHelpers.memoize)(function (model) {
-	    return todoMain(model);
-	});
 	
 	var todoView = exports.todoView = function (model) {
 	    return function () {
@@ -347,7 +333,7 @@
 	                return new _FableHelpers.Html.Types.Node("Element", [tagName, _fableCore.List.ofArray([new _FableHelpers.Html.Types.Attribute("Attribute", ["class", "todoapp"])])], children);
 	            };
 	        }();
-	    }()(_fableCore.List.ofArray([todoHeader(model.Input)], model.Items.tail == null ? new _fableCore.List() : _fableCore.List.ofArray([memoizedMain(model), memoizedFooter(model)])));
+	    }()(_fableCore.List.ofArray([todoHeader(model.Input)], model.Items.tail == null ? new _fableCore.List() : _fableCore.List.ofArray([todoMain(model), todoFooter(model)])));
 	};
 	
 	var Storage = exports.Storage = function ($exports) {
@@ -2875,7 +2861,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.memoize = exports.renderer = exports.render = exports.createTree = exports.App = exports.Html = undefined;
+	exports.renderer = exports.render = exports.createTree = exports.App = exports.Html = undefined;
 	
 	var _fableCore = __webpack_require__(1);
 	
@@ -3110,7 +3096,7 @@
 	                            })), new RenderState("InProgress"))), builder_.returnFrom(loop((AppState_1 = (inputRecord = state.AppState, new AppState(model_, inputRecord.View, inputRecord.Update)), new App(AppState_1, _fableCore.List.append(state.JsCalls, jsCalls), state.Node, state.CurrentTree, state.Subscribers, state.NodeSelector, renderState))))) : message.Case === "Draw" ? (matchValue_1 = state.RenderState, matchValue_1.Case === "NoRequest" ? function () {
 	                                throw "Shouldn't happen";
 	                                return builder_.zero();
-	                            }() : (model = state.AppState.Model, jsCalls = state.JsCalls, tree = renderTree(state.AppState.View)(post)(model), patches = renderer.Diff(currentTree)(tree), renderer.Patch(rootNode)(patches), _fableCore.Seq.iter(function (i) {
+	                            }() : (notifySubscribers(state.Subscribers)(new AppEvents("DrawStarted")), model = state.AppState.Model, jsCalls = state.JsCalls, tree = renderTree(state.AppState.View)(post)(model), patches = renderer.Diff(currentTree)(tree), renderer.Patch(rootNode)(patches), _fableCore.Seq.iter(function (i) {
 	                                i();
 	                            }, jsCalls), notifySubscribers(state.Subscribers)(new AppEvents("ModelChanged", model, state.AppState.Model)), builder_.returnFrom(loop((RenderState_1 = new RenderState("NoRequest"), CurrentTree = tree, JsCalls = new _fableCore.List(), new App(state.AppState, JsCalls, state.Node, CurrentTree, state.Subscribers, state.NodeSelector, RenderState_1)))))) : builder_.returnFrom(loop(state));
 	                        })) : function () {
@@ -3129,16 +3115,31 @@
 	var createTree = exports.createTree = function (handler, tag, attributes, children) {
 	    var toAttrs;
 	    return toAttrs = function (attrs) {
-	        return _fableCore.Util.createObj(_fableCore.List.map(function (_arg1) {
-	            var keyValue, binding, f, ev, style;
-	            return _arg1.Case === "Property" ? (keyValue = _arg1.Fields[0], keyValue) : _arg1.Case === "Attribute" ? (keyValue = _arg1.Fields[0], keyValue) : _arg1.Case === "EventHandlerBinding" ? (binding = _arg1.Fields[0], binding.Case === "KeyboardEventHandler" ? (f = binding.Fields[0][1], ev = binding.Fields[0][0], [ev, function ($var1) {
+	        var elAttributes, props, x;
+	        return elAttributes = function (_arg2) {
+	            var v;
+	            return _arg2.tail == null ? null : (v = _arg2, ["attributes", _fableCore.Util.createObj(v)]);
+	        }(_fableCore.List.choose(function (x) {
+	            return x;
+	        }, _fableCore.List.map(function (_arg1) {
+	            var v, k;
+	            return _arg1.Case === "Attribute" ? (v = _arg1.Fields[0][1], k = _arg1.Fields[0][0], function (arg0) {
+	                return arg0;
+	            }([k, v])) : null;
+	        }, attrs))), props = _fableCore.List.map(function (_arg4) {
+	            var style, v, k, binding, f, ev;
+	            return _arg4.Case === "Style" ? (style = _arg4.Fields[0], ["style", _fableCore.Util.createObj(style)]) : _arg4.Case === "Property" ? (v = _arg4.Fields[0][1], k = _arg4.Fields[0][0], [k, v]) : _arg4.Case === "EventHandlerBinding" ? (binding = _arg4.Fields[0], binding.Case === "KeyboardEventHandler" ? (f = binding.Fields[0][1], ev = binding.Fields[0][0], [ev, function ($var1) {
 	                return handler(f($var1));
 	            }]) : binding.Case === "EventHandler" ? (f = binding.Fields[0][1], ev = binding.Fields[0][0], [ev, function ($var2) {
 	                return handler(f($var2));
 	            }]) : (f = binding.Fields[0][1], ev = binding.Fields[0][0], [ev, function ($var3) {
 	                return handler(f($var3));
-	            }])) : (style = _arg1.Fields[0], ["style", _fableCore.Util.createObj(style)]);
-	        }, attrs));
+	            }])) : function () {
+	                throw ["/Users/tomasjansson/git/todomvc-perf-comparison/todomvc/fable/src/Fable.Helpers.Virtualdom.fsx", 457, 25];
+	            }();
+	        }, _fableCore.List.filter(function (_arg3) {
+	            return _arg3.Case === "Attribute" ? false : true;
+	        }, attrs)), _fableCore.Util.createObj(elAttributes != null ? (x = elAttributes, _fableCore.List.ofArray([x], props)) : props);
 	    }, (0, _virtualDom.h)(tag, toAttrs(attributes), Array.from(children));
 	};
 	
@@ -3165,16 +3166,6 @@
 	    }, function (e) {
 	        return (0, _virtualDom.create)(e);
 	    });
-	};
-	
-	var memoize = exports.memoize = function (f) {
-	    return function () {
-	        var cache;
-	        return cache = new Map(), function (x) {
-	            var res;
-	            return cache.has(x) ? cache.get(x) : (res = f(x), cache.set(x, res), res);
-	        };
-	    }();
 	};
 
 
